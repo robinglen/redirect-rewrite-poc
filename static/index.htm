@@ -1,0 +1,90 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Clientside fetch</title>
+
+  <script>
+  function helper(status, title, call, message) {
+  console.log(``);
+  console.log(`=========${title}=========`);
+  console.log(`..........................`);
+  console.log(`---------${call}----------`);
+  if (status === 'success') {
+    console.log(message);
+  } else {
+    console.log('*******ERROR*******');
+    console.error(message);
+    console.log('*******************');
+  }
+  console.log('--------------------------');
+  console.log(`..........................`);
+  console.log(`==========================`);
+  console.log(``);
+}
+
+// success
+//----------------------------
+// isomorphic-fetch
+// request 200
+// returns body
+fetch('http://localhost:3000/200').then(data => {
+  if (data.status === 200) {
+    data.json().then(json => {
+      helper('success', 'Fetch 200 lib', 'rewrite', json);
+    });
+  } else {
+    helper('error', 'Fetch 200 lib', 'rewrite', 'NOT SUCCESSFUL');
+  }
+});
+
+// REWRITES
+//----------------------------
+// Request
+// isomorphic-fetch 305
+// returns a 3xx and a resource to redirect to
+fetch('http://localhost:3000/305').then(data => {
+  if (data.status === 305) {
+    data.json().then(json => {
+      helper('success', 'isomorphic-fetch 305 lib', 'rewrite', json);
+    });
+  } else {
+    helper('error', 'isomorphic-fetch 305 lib', 'rewrite', 'NO BODY');
+  }
+});
+
+// REDIRECTS
+//----------------------------
+// auto follow
+// isomorphic-fetch 308
+// this automatically will perminantly redirect to correct resource
+fetch('http://localhost:3000/308').then(data => {
+  if (data.status === 200) {
+    helper('success', 'isomorphic-fetch redirect lib', 'redirect', `status code ${data.status}`);
+  } else {
+    helper('error', 'isomorphic-fetch redirect lib', 'redirect', 'NO AUTO REDIRECT');
+  }
+});
+
+// dont auto follow
+// isomorphic-fetch 308
+// this will not follow 308 but show body
+// This doesn't seem to work in the client
+fetch('http://localhost:3000/308', { redirect: 'manual' }).then(data => {
+  if (data.status === 308) {
+    data.json().then(json => {
+      helper('success', 'isomorphic-fetch dont redirect lib', 'redirect', `status code ${data.status} body: ${JSON.stringify(json)}`);
+    });
+  } else {
+    helper('error', 'isomorphic-fetch dont redirect lib', 'redirect', 'NO AUTO REDIRECT');
+  }
+});
+</script>
+
+</head>
+  Check console for fetch
+<body>
+</body>
+</html>

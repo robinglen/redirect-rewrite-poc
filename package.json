@@ -1,0 +1,26 @@
+{
+  "name": "redirect-rewrite-poc",
+  "version": "1.0.0",
+  "description": "a poc for redirect service",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --experimental-modules index.mjs",
+    "start:request": "node --experimental-modules node-request.mjs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thearegee/redirect-rewrite-poc.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thearegee/redirect-rewrite-poc/issues"
+  },
+  "homepage": "https://github.com/thearegee/redirect-rewrite-poc#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "isomorphic-fetch": "^2.2.1",
+    "request": "^2.83.0"
+  }
+}
