@@ -55,11 +55,11 @@ Error again standard, return error message and with client 4xx or server 5xx err
 
 ### Rewrites.
 
-Rewrites happen when we want data, service tells us it comes it comes from but we want to serve it to a different URL. However We don't want to redirect, we want to proxy that content. This could be for vanity URL reasons.
+Rewrites happen when we want data, but service tells us we need to get it from a specific location but we want to serve it to a different URL. However We don't want to redirect, we want to proxy that content. This could be for vanity URL reasons.
 
 ### Redirect.
 
-Redirects are when we are told where we want to get the resource from has moved, this could be permanently or temporary. The client might also not want to automatically follow the redirect but return the body of the new location and the status code associated.
+Redirects happen when we want data, but the service tells us the resource from has moved, this could be permanently or temporary. The client might also not want to automatically follow the redirect but return the body of the new location and the status code associated. This could be for SEO reasons.
 
 ## Recommendations.
 
@@ -112,9 +112,9 @@ fetch('http://localhost:3000/308', { redirect: 'error' }).then(data => {}).catch
   // error returned
 });
 ```
-The error returned is just `TypeError: Failed to fetch` and there is no body.
+An error is returned when fetch hits a 3xx, the error returned is just `TypeError: Failed to fetch` and there is no body.
 
-I believe this is for security reasons, more can be read here: [https://github.com/whatwg/fetch/issues/66](https://github.com/whatwg/fetch/issues/66).
+This is for security reasons, for more details: [https://github.com/whatwg/fetch/issues/66](https://github.com/whatwg/fetch/issues/66).
 
 However we will never need to do rewrites in the browser as this is a routing concern.
 
