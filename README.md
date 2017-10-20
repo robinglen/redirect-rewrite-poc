@@ -64,12 +64,12 @@ response-headers:
   status: 305
 
 body: {
-  status: 'rewrite',
+  status: 200,
   location: 'http://proxy/content/url'
 }
 ```
 
-The status code 305 is for a proxy request, although deprecated, this indicates to the client the resource needs to be fetched from a different location.
+The status code 305 is for a proxy request, although deprecated, this indicates to the client the resource needs to be fetched from a different location. The body is then used to tell the client what they need to do next.
 
 ### Redirects.
 
@@ -86,7 +86,7 @@ body: {
 }
 ```
 
-The status code 308 is for a permanent redirect, this indicates to the client the resource has moved. The headers allow the client follow the redirect using location header, or if you client doesn't want to follow they can use the body and return the response.
+The status code 308 is for a permanent redirect, this indicates to the client the resource has moved. The headers allow the client follow the redirect using location header, or if you client doesn't want to follow they can use the body and return the response. The body is then used to tell the client what they need to do next.
 
 *NOTE:* When using fetch in the client, you can't seem to stop it automatically following a 308.
 
