@@ -1,9 +1,14 @@
 # redirect-rewrite-poc
-A prototype a redirect service, trying to figure out the best status for these API responses and then tests to see how clients handle them.
+A prototype to test out a concept for a redirect service, trying to figure out the best status code for different API responses and how clients handle them.
 
-## Running
+The idea being a service could return valid data 200, the resource has moved, or the resource should be served by an existing URL.
+
+## Running.
+
+_POC uses native ES modules so you need Node 8.5._
 
 ```Bash
+# Starting mock service
 npm install
 npm start
 ```
@@ -16,28 +21,55 @@ npm run start:request
 
 Running client tests
 ```Bash
- open -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome http://localhost:3000/client
- # Open terminal
+# Separate terminal
+# Opens chrome check console to see results
+npm run start:client
 ```
 
 ## Requirements.
 
-We need a response to be able to handle different different types of response.
+We need to be able to handle multiple different types of response.
 
-1) redirect
-2) rewrite
+1) Success
+2) Error
+3) Rewrite
+4) Redirect
 
-### Redirects.
+### Success.
 
-Redirects should not be auto-followed but can be (upto client), we should be encouraging people to know follow the api call unless they want to but return a status and a url to follow.
+Success is standard, return correct data with 200 status code.
+
+### Error.
+
+Error again standard, return error message and with client 4xx or server 5xx error status code.
 
 ### Rewrites.
 
-Rewrites happen when we want content on a URL and a service tells us it comes from a different place. We don't want to redirect, we want to proxy that content. This could be for vanity URL reasons.
+Rewrites happen when we want data, service tells us it comes it comes from but we want to serve it to a different URL. However We don't want to redirect, we want to proxy that content. This could be for vanity URL reasons.
 
-## Recommendations
+### Redirect.
 
-My recommendations for two different responses.
+Redirects are when we are told where we want to get the resource from has moved, this could be permanently or temporary. The client might also not want to automatically follow the redirect but return the body of the new location and the status code associated.
+
+## Recommendations.
+
+My recommendations for rewrites and redirects responses.
+
+### Rewrites.
+
+Rewrites should have the following format.
+
+```
+response-headers:
+  status: 305
+
+body: {
+  status: 'rewrite',
+  location: 'http://proxy/content/url'
+}
+```
+
+The status code 305 is for a proxy request, although deprecated, this indicates to the client the resource needs to be fetched from a different location.
 
 ### Redirects.
 
@@ -54,38 +86,57 @@ body: {
 }
 ```
 
-The status code 308 is for a permanent redirect. This allows with a follow redirect call to use the location header, or if you client doesn't want to transparently the redirect they can consume the body and can pass a direct up the chain to the client.
+The status code 308 is for a permanent redirect, this indicates to the client the resource has moved. The headers allow the client follow the redirect using location header, or if you client doesn't want to follow they can use the body and return the response.
 
+*NOTE:* When using fetch in the client, you can't seem to stop it automatically following a 308.
 
-### Rewrites.
-
-Rewrites should have the following format.
-
+```Javascript
+fetch('http://localhost:3000/308', { redirect: 'manual' }).then(data => {
+  // returns status 0
+});
 ```
-response-headers:
-  status: 305
+This implies the redirect manual is terminating the request before its completed.
 
-body: {
-  status: 'rewrite',
-  location: 'http://proxy/content/url'
-}
+```Javascript
+fetch('http://localhost:3000/308', { redirect: 'error' }).then(data => {}).catch(error => {
+  // error returned
+});
 ```
+The error returned is just `TypeError: Failed to fetch` and there is no body.
 
-The status code 305 is for a proxy request, this is now deprecated however it makes sense in our situation. This will let us identify content that should be a rewrite.
+I believe this is for security reasons, more can be read here: [https://github.com/whatwg/fetch/issues/66](https://github.com/whatwg/fetch/issues/66).
 
-### Examples
+However we will never need to do rewrites in the browser as this is a routing concern.
+
+### Examples.
+
+Here is how you could potentially use this service and consume the status codes.
 
 ```Javascript
 
-// example following a redirect
-request({url:'http://localhost:3000/308', followRedirect: false}).then(data => {
+// example not following redirects
+request({url:'http://my-service', followRedirect: false}).then(data => {
     if (data.statusCode === 200) {
       // successful data request
+    }
+    if (data.statusCode === 305) {
+      // fetch(data.body.location).then(data => {
+      //  res.statusCode = data.statusCode;
+      //  res.send(data.body)
+      // })
+      //
     }
     if (data.statusCode === 308) {
       // res.statusCode = data.body.status
       // res.location = data.body.location
       // res.end();
+    }
+});
+
+// example following redirects
+request({url:'http://my-service'}).then(data => {
+    if (data.statusCode === 200) {
+      // successful data request
     }
     if (data.statusCode === 305) {
       // fetch(data.body.location).then(data => {

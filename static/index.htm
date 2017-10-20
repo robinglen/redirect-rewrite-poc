@@ -7,7 +7,8 @@
   <title>Clientside fetch</title>
 
   <script>
-  function helper(status, title, call, message) {
+  // format logs for testing
+function helper(status, title, call, message) {
   console.log(``);
   console.log(`=========${title}=========`);
   console.log(`..........................`);
@@ -71,16 +72,15 @@ fetch('http://localhost:3000/308').then(data => {
 // dont auto follow
 // isomorphic-fetch 308
 // this will not follow 308 but show body
-// This doesn't seem to work in the client
-fetch('http://localhost:3000/308', { redirect: 'manual' }).then(data => {
-  if (data.status === 308) {
-    data.json().then(json => {
-      helper('success', 'isomorphic-fetch dont redirect lib', 'redirect', `status code ${data.status} body: ${JSON.stringify(json)}`);
-    });
-  } else {
-    helper('error', 'isomorphic-fetch dont redirect lib', 'redirect', 'NO AUTO REDIRECT');
-  }
-});
+// However in the client I can't seem to get the body, if I use redirect manual I get status code 0
+// if I use error I can't get the body
+fetch('http://localhost:3000/308', { redirect: 'error' })
+  .then(data => {
+    // { redirect: 'error' } returns error promise
+  })
+  .catch(error => {
+    helper('error', 'isomorphic-fetch dont redirect lib', 'redirect', error);
+  });
 </script>
 
 </head>

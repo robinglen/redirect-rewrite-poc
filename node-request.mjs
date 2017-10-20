@@ -4,6 +4,7 @@ import isomorphicFetch from 'isomorphic-fetch';
 
 const rp = util.promisify(request);
 
+// format logs for testing
 function helper(status, title, call, message) {
   console.log(``);
   console.log(`=========${title}=========`);

@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node --experimental-modules index.mjs",
     "start:request": "node --experimental-modules node-request.mjs",
+    "start:client": "/usr/bin/open -a '/Applications/Google Chrome.app' 'http://localhost:3000/client'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -2,13 +2,13 @@ import express from 'express';
 import path from 'path';
 const app = express();
 
-// homepage
+// landing page
 app.get('/', function(req, res) {
   res.statusCode = 200;
-  res.send('hello world');
+  res.send('redirect-rewrite-poc');
 });
 
-// successful test
+// success
 app.get('/200', function(req, res) {
   res.statusCode = 200;
   res.json({
@@ -16,16 +16,34 @@ app.get('/200', function(req, res) {
   });
 });
 
+// client error
+app.get('/404', function(req, res) {
+  res.statusCode = 404;
+  res.json({
+    error: 'not found'
+  });
+});
+
+// server error
+app.get('/503', function(req, res) {
+  res.statusCode = 503;
+  res.json({
+    error: 'broken'
+  });
+});
+
 // rewrite rule - with proxy header
+// body tells the client what to do
 app.get('/305', function(req, res) {
   res.statusCode = 305;
   res.json({
-    status: 'rewrite',
+    status: 200,
     location: 'http://localhost:3000'
   });
 });
 
-// this is a perminate redirect
+// redirect rule - with perminate redirect header and locaction
+// body tells the client what to do
 app.get('/308', function(req, res) {
   res.statusCode = 308;
   res.location('http://localhost:3000');
@@ -36,7 +54,7 @@ app.get('/308', function(req, res) {
   res.send();
 });
 
-// this is for client implimentation
+// server client page - for testing browser responses
 app.get('/client', function(req, res) {
   res.statusCode = 200;
   res.sendFile(path.resolve('static/index.htm'));
