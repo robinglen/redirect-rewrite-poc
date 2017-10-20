@@ -1,7 +1,7 @@
 # redirect-rewrite-poc
 A prototype to test out a concept for a redirect service, trying to figure out the best status code for different API responses and how clients handle them.
 
-The idea being a service could return valid data 200, the resource has moved, or the resource should be served by an existing URL.
+The idea being a service could return valid data with a 200, client errors 4xx, the resource has moved, the resource should be served by an existing URL or server errors 5xx.
 
 ## Running.
 
@@ -11,6 +11,16 @@ _POC uses native ES modules so you need Node 8.5._
 # Starting mock service
 npm install
 npm start
+
+# Starts server on port 3000
+
+# Routes
+# /
+# /200
+# /404
+# /305
+# /308
+# /503
 ```
 
 Running server tests
